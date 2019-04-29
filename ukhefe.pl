@@ -71,16 +71,27 @@ $xpc->registerNs( 'md', 'urn:oasis:names:tc:SAML:2.0:metadata' );
 $xpc->registerNs( 'mdrpi', 'urn:oasis:names:tc:SAML:metadata:rpi' );
 $xpc->registerNs( 'shibmd', 'urn:mace:shibboleth:metadata:1.0' );
 
+# From the XML::LibXML::XPathContext documentation
+$xpc->registerFunction('grep_nodes', \&grep_nodes);
+
 @nodes = $xpc->findnodes( '//md:EntityDescriptor
                 [md:IDPSSODescriptor]
+                [grep_nodes(md:IDPSSODescriptor/md:Extensions/shibmd:Scope, ".ac.uk$")]
 		[md:Extensions/mdrpi:RegistrationInfo/@registrationAuthority="http://ukfederation.org.uk"]
 		[not(md:Extensions/mdattr:EntityAttributes/saml:Attribute/saml:AttributeValue="http://refeds.org/category/hide-from-discovery")]
 		');
 
-foreach (@nodes) {
-        processNode( $_ );
+foreach $node (@nodes) {
+	@attributelist = $node->attributes();
+	print join(';', @attributelist) . "\n";
 }
 
-sub processNode {
-	print "Node\n";
-}
+# From the XML::LibXML::XPathContext documentation
+sub grep_nodes {
+           my ($nodelist,$regexp) =  @_;
+           my $result = XML::LibXML::NodeList->new;
+           for my $node ($nodelist->get_nodelist()) {
+             $result->push($node) if $node->textContent =~ $regexp;
+           }
+           return $result;
+};
