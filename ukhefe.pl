@@ -93,6 +93,8 @@ if ( ! -r $xmlfile ) {
 
 $DEBUG && print STDERR "Allow list: " . join(' ', @allowed) . "\n";
 $DEBUG && print STDERR "Blocklist: " . join(' ', @blocked) . "\n";
+# the explicitly allowed entities are output first, so must be removed from main body to avoid duplication
+push @blocked, @allowed;
 
 #
 # Aggregate header
