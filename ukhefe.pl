@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Given a metadata aggreagte, this script outputs an unsigned metadata aggregate
+# Given a metadata aggregate, this script outputs an unsigned metadata aggregate
 # that roughly corresponds to UK HE and FE IdPs in it.
 #
 # Author: Alex Stuart, alex.stuart@jisc.ac.uk
@@ -51,7 +51,7 @@ sub usage {
 			  More than one -a <entityID> can be given.
 
         -h 		- print this help text and exit
-        -d		- print debug information. NB: this is to STDOUT as is the XML so beware!
+        -d		- print debug information
 
 EOF
 }
@@ -91,8 +91,8 @@ if ( ! -r $xmlfile ) {
 # Blocklists and explicit additions
 #
 
-$DEBUG && print "Allow list: " . join(' ', @allowed) . "\n";
-$DEBUG && print "Blocklist: " . join(' ', @blocked) . "\n";
+$DEBUG && print STDERR "Allow list: " . join(' ', @allowed) . "\n";
+$DEBUG && print STDERR "Blocklist: " . join(' ', @blocked) . "\n";
 
 #
 # Aggregate header
@@ -117,7 +117,7 @@ $xpc->registerNs( 'shibmd', 'urn:mace:shibboleth:metadata:1.0' );
 # Allowed entities are printed first
 #
 for $allowed (@allowed) {
-        $DEBUG && print "Finding $allowed\n";
+        $DEBUG && print STDERR "Finding $allowed\n";
         @nodes = $xpc->findnodes( '//md:EntityDescriptor[./@entityID="'.$allowed.'"]');
         for $node (@nodes) {
                 $newnode = $node->cloneNode( 1 );
